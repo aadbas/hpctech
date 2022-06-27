@@ -1,0 +1,44 @@
+
+/*
+============================================================================
+Name : SixFuncCPP.cpp
+Description : First MPI C++ six function program
+============================================================================
+*/
+#include <math.h>
+#include "mpi.h"
+#include <iostream>
+using namespace std;
+int main(int argc, char *argv[]) {
+int my_rank; /* rank of process */
+int size; /* number of processes */
+int dest; /* rank of receiver */
+int tag=0; /* tag for messages */
+int n;
+MPI::Status status;
+/* start up MPI */
+MPI::Init(argc, argv);
+/* find out process rank */
+size = MPI::COMM_WORLD.Get_size();
+/* find out process rank */
+size = MPI::COMM_WORLD.Get_size();
+/* find out number of processes */
+my_rank = MPI::COMM_WORLD.Get_rank();
+n=10;
+if (my_rank == 0){
+/* print rank, process with rank == 0 is master */
+cout << "master process rank " << my_rank << endl;
+/*MPI::COMM_WORLD.Bcast(&n, 1, MPI_INT,0);*/
+for (dest = 1; dest < size; dest++){
+/* number n is sent by master to all other processes*/
+MPI::COMM_WORLD.Send(&n, 1, MPI_INT, dest, tag);
+}
+}
+else{
+/* using Bcast the following Recv command must be commented out */
+MPI::COMM_WORLD.Recv(&n, 1, MPI_INT, 0, tag);
+cout << "subprocess rank " << my_rank << " received: " << n << endl;
+}
+MPI::Finalize();
+return 0;
+}
